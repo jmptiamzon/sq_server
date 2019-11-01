@@ -19,12 +19,9 @@ var resultsFound = {
     "data": ""
 };
 
-pool.on('error', function(err) {
-  console.log("[mysql error]", err);
-});
-
 module.exports = {
     loginUser: function (req, res) {
+      console.log('pumasok');
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
           var sql = 'SELECT * FROM tbladmin WHERE username = ?';
