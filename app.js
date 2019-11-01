@@ -9,8 +9,8 @@ require('dotenv').config();
 const cors = require('cors');
 
 // ****** allow cross-origin requests code START ****** //
-app.use(cors()); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
-const allowedOrigins = process.env.allowedOrigins.split(',');
+app.use(cors({ origin: 'http://localhost:4200' })); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
+// const allowedOrigins = process.env.allowedOrigins.split(',');
 
 // ****** validation rules START ****** //
 const valFunctions = require('./validators/validate');
