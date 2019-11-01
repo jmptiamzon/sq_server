@@ -1,6 +1,6 @@
 const pool = require('./dbconnection');
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const bcrypt = require('bcryptjs');
+// const saltRounds = 10;
 const jwt = require('jsonwebtoken');
 
 var resultsNotFound = {
@@ -35,7 +35,7 @@ module.exports = {
               resultsNotFound["errorMessage"] = "User Id not found.";
               return res.send(resultsNotFound);
             }
-            bcrypt.compare(req.body.pword, results[0].password, function (err, result) {
+            bcrypt.compare(req.body.pword, results[0].password).then((result) => {
               if (result == true) {
                 var token = {
                   "token": jwt.sign(
@@ -63,25 +63,29 @@ module.exports = {
     addAdmin: function (req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
-  
-        bcrypt.hash(req.body.pword, saltRounds, function (err, hash) {
-          var sql = 'INSERT INTO tbladmin SET ?';
-          var values = { 'firstname': req.body.fname, 'middlename': req.body.mname, 'lastname': req.body.lname, 'username': req.body.uname, 'password': hash }
-          // Use the connection
-          connection.query(sql, values, function (error, results, fields) {
-            if (error) {
-              resultsNotFound["errorMessage"] = "emailID already exists.";
-              return res.send(resultsNotFound);
-            } else {
-              resultsFound["data"] = results;
-              return res.send(resultsFound);
-            } 
-  
-            // When done with the connection, release it.
-            connection.release(); // Handle error after the release.
-            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+
+        bcrypt.genSalt(10, function(err, salt) {
+          bcrypt.hash(req.body.pword, salt, function (err, hash) {
+            var sql = 'INSERT INTO tbladmin SET ?';
+            var values = { 'firstname': req.body.fname, 'middlename': req.body.mname, 'lastname': req.body.lname, 'username': req.body.uname, 'password': hash }
+            // Use the connection
+            connection.query(sql, values, function (error, results, fields) {
+              if (error) {
+                resultsNotFound["errorMessage"] = "emailID already exists.";
+                return res.send(resultsNotFound);
+              } else {
+                resultsFound["data"] = results;
+                return res.send(resultsFound);
+              } 
+    
+              // When done with the connection, release it.
+              connection.release(); // Handle error after the release.
+              if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+            });
           });
+
         });
+  
       });
     },
 
@@ -371,29 +375,32 @@ module.exports = {
             if (error) throw error; // Don't use the connection here, it has been returned to the pool.
           });
     
-        } else {  
-          bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
-            var values = { 
-              'firstname': req.body.fname, 
-              'middlename': req.body.mname, 
-              'lastname': req.body.lname, 
-              'username': req.body.uname,
-              'password': hash,
-              'status': req.body.status,
-            }
-
-            connection.query(sql, [values, req.body.id], function(error, results, fields){
-              if (error) { 
-                console.log(error);
-                resultsNotFound["errorMessage"] = "Data is NOT updated.";
-                return res.send(resultsNotFound);
-  
-              } else {
-                return res.send(resultsFound);
+        } else {
+          bcrypt.genSalt(10, function(err, salt) {
+            bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
+              var values = { 
+                'firstname': req.body.fname, 
+                'middlename': req.body.mname, 
+                'lastname': req.body.lname, 
+                'username': req.body.uname,
+                'password': hash,
+                'status': req.body.status,
               }
-
-              connection.release(); // Handle error after the release.
-              if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+  
+              connection.query(sql, [values, req.body.id], function(error, results, fields){
+                if (error) { 
+                  console.log(error);
+                  resultsNotFound["errorMessage"] = "Data is NOT updated.";
+                  return res.send(resultsNotFound);
+    
+                } else {
+                  return res.send(resultsFound);
+                }
+  
+                connection.release(); // Handle error after the release.
+                if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+              });
+  
             });
 
           });
@@ -430,28 +437,32 @@ module.exports = {
           });
     
         } else {  
-          bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
-            var values = { 
-              'firstname': req.body.fname, 
-              'middlename': req.body.mname, 
-              'lastname': req.body.lname, 
-              'username': req.body.uname,
-              'password': hash,
-            }
+          bcrypt.genSalt(10, function(err, hash) {
 
-            connection.query(sql, [values, req.body.id], function(error, results, fields){
-              if (error) { 
-                console.log(error);
-                resultsNotFound["errorMessage"] = "Data is NOT updated.";
-                return res.send(resultsNotFound);
-  
-              } else {
-                console.log(results);
-                return res.send(resultsFound);
+            bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
+              var values = { 
+                'firstname': req.body.fname, 
+                'middlename': req.body.mname, 
+                'lastname': req.body.lname, 
+                'username': req.body.uname,
+                'password': hash,
               }
-
-              connection.release(); // Handle error after the release.
-              if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+  
+              connection.query(sql, [values, req.body.id], function(error, results, fields){
+                if (error) { 
+                  console.log(error);
+                  resultsNotFound["errorMessage"] = "Data is NOT updated.";
+                  return res.send(resultsNotFound);
+    
+                } else {
+                  console.log(results);
+                  return res.send(resultsFound);
+                }
+  
+                connection.release(); // Handle error after the release.
+                if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+              });
+  
             });
 
           });
