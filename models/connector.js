@@ -21,7 +21,7 @@ var resultsFound = {
 
 module.exports = {
     loginUser: function (req, res) {
-      console.log('pumasok');
+      console.log(req);
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
           var sql = 'SELECT * FROM tbladmin WHERE username = ?';
