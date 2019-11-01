@@ -19,6 +19,10 @@ var resultsFound = {
     "data": ""
 };
 
+pool.on('error', function(err) {
+  console.log("[mysql error]", err);
+});
+
 module.exports = {
     loginUser: function (req, res) {
       pool.getConnection(function (err, connection) {
