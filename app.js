@@ -9,7 +9,7 @@ require('dotenv').config();
 const cors = require('cors');
 
 // ****** allow cross-origin requests code START ****** //
-app.use(cors({ origin: 'http://localhost:4200' })); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
+app.use(cors({ origin: 'https://ceval-1053a.firebaseapp.com' })); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
 // const allowedOrigins = process.env.allowedOrigins.split(',');
 
 // ****** validation rules START ****** //
