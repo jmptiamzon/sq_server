@@ -9,8 +9,9 @@ require('dotenv').config();
 const cors = require('cors');
 
 // ****** allow cross-origin requests code START ****** //
-app.use(cors({ origin: 'https://ceval-1053a.firebaseapp.com' })); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
-// const allowedOrigins = process.env.allowedOrigins.split(',');
+// http://localhost:4200 { origin: 'https://ceval-1053a.firebaseapp.com' }
+app.use(cors()); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
+const allowedOrigins = process.env.allowedOrigins.split(',');
 
 // ****** validation rules START ****** //
 const valFunctions = require('./validators/validate');
@@ -187,6 +188,16 @@ app.get('/updateLogs/:id/:cond/:username/:userid', jsonParser, function (req, re
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.updateLogs(req,res);
+});
+
+app.get('/getAssessmentQuestions', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    dbFunctions.getAssessmentQuestions(req,res);
+});
+
+app.get('/getAssessmentCourse', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    dbFunctions.getAssessmentCourse(req,res);
 });
 
 

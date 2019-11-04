@@ -699,4 +699,54 @@ module.exports = {
           });
         });
     },
+
+    getAssessmentQuestions: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblltree INNER JOIN tblquestions ON tblltree.question_id = tblquestions.id INNER JOIN tblschool ON tblltree.school_id = tblschool.id';
+          // Use the connection
+          connection.query(sql, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getAssessmentCourse: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblcourse';
+          // Use the connection
+          connection.query(sql, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
 };
