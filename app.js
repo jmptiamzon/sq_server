@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mysqldump = require('mysqldump');
+var nodemailer = require('nodemailer');
 //const bcrypt = require('bcrypt');
 //const saltRounds = 10;
 // store config variables in dotenv
@@ -19,9 +20,9 @@ const valFunctions = require('./validators/validate');
 
 // app Routes
 // create application/json parser
-const jsonParser = bodyParser.json()
+const jsonParser = bodyParser.json();
 // create application/x-www-form-urlencoded parser
-const urlencodedParser = bodyParser.urlencoded({ extended: false })
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
  
 // POST /login gets urlencoded bodies
 app.post('/login', jsonParser, function (req, res) {
@@ -198,6 +199,31 @@ app.get('/getAssessmentQuestions', jsonParser, function (req, res) {
 app.get('/getAssessmentCourse', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     dbFunctions.getAssessmentCourse(req,res);
+});
+
+app.get('/sendEmail', jsonParser, function (req, res) {
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            // should be replaced with real sender's account
+            user: 'jmptiamzon@gmail.com',
+            pass: '45788670'
+        }
+    });
+    let mailOptions = {
+        // should be replaced with real recipient's account
+        to: 'sexurfaffy@gmail.com',
+        subject: 'test',
+        text: 'test'
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+    });
 });
 
 
