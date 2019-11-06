@@ -201,6 +201,11 @@ app.get('/getAssessmentCourse', jsonParser, function (req, res) {
     dbFunctions.getAssessmentCourse(req,res);
 });
 
+app.get('/getAssessmentSchool', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    dbFunctions.getAssessmentSchool(req,res);
+});
+
 app.get('/sendEmail', jsonParser, function (req, res) {
     let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -226,6 +231,12 @@ app.get('/sendEmail', jsonParser, function (req, res) {
     });
 });
 
+app.post('/addUser', jsonParser, function (req,res) {
+    if(valFunctions.checkInputDataNULL(req,res)) return false;
+    if(valFunctions.checkInputDataQuality(req,res)) return false;
+    var dbFunctions = require('./models/connector');
+    dbFunctions.addUser(req,res);
+});
 
 
 /*

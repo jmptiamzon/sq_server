@@ -749,4 +749,56 @@ module.exports = {
           });
         });
     },
+
+    getAssessmentSchool: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblschool';
+          // Use the connection
+          connection.query(sql, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    addUser: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'INSERT INTO tblusers SET ?';
+        var values = { 
+          'full_name': req.body.fname, 
+          'gender': req.body.gender, 
+          'age': req.body.age,
+          'email': req.body.email, 
+        };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
 };
