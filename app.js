@@ -238,6 +238,30 @@ app.post('/addUser', jsonParser, function (req,res) {
     dbFunctions.addUser(req,res);
 });
 
+app.get('/getUserCount', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getUserCount(req,res);
+});
+
+app.get('/getAdminCount', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getAdminCount(req,res);
+});
+
+app.get('/getDbUpdate', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getDbUpdate(req,res);
+});
+
+app.get('/getUsers', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getUsers(req,res);
+});
+
 
 /*
 var test = "";
