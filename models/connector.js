@@ -183,9 +183,10 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tbllogs';
+          var sql = 'SELECT * FROM tbllogs WHERE ?';
+          var values = { 'user_type': req.params.type }
           // Use the connection
-          connection.query(sql, function (error, results, fields) {
+          connection.query(sql, values, function (error, results, fields) {
             if (error) {
               resultsNotFound["errorMessage"] = "Something went wrong with Server.";
               return res.send(resultsNotFound);
@@ -679,7 +680,58 @@ module.exports = {
               'user_type': 0 
             };
 
+          } else if (req.body.log == 14) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' went to home page.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 15) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' went to about page.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 16) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' went to feature page.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 17) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' went to assessment page.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 18) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' submitted the initial assessment.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 19) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' submitted the mid assessment.',
+              'user_type': 1
+            };
+
+          } else if (req.body.log == 20) {
+            values = { 
+              'user': req.body.user_id, 
+              'msg_log': 'User ' + req.body.name + ' submitted the whole assessment.',
+              'user_type': 1
+            };
+
           }
+
+
 
           // Use the connection
           connection.query(sql, values, function (error, results, fields) {
@@ -900,5 +952,54 @@ module.exports = {
             if (error) throw error; // Don't use the connection here, it has been returned to the pool.
           });
         });
+    },
+
+    addVisitor: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'INSERT INTO tblvisitors SET ?';
+        var values = { 'user_token': req.body.item };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    addRank: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'INSERT INTO tblcourserank SET ?';
+        var values = { 
+          'user_id': req.body.userId,
+          'rank': req.body.rank,
+          'course_id': req.body.course_id, 
+          'school_id': req.body.school_id
+        };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
     },
 };

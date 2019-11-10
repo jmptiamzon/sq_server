@@ -97,7 +97,7 @@ app.get('/getAppStatus', jsonParser, function (req, res) {
     dbFunctions.getAppStatus(req,res);
 });
 
-app.get('/getUserLogs', jsonParser, function (req, res) {
+app.get('/getUserLogs/:type', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.getUserLogs(req,res);
@@ -260,6 +260,27 @@ app.get('/getUsers', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.getUsers(req,res);
+});
+
+app.post('/addVisitor', jsonParser, function (req,res) {
+    if(valFunctions.checkInputDataNULL(req,res)) return false;
+    if(valFunctions.checkInputDataQuality(req,res)) return false;
+    var dbFunctions = require('./models/connector');
+    dbFunctions.addVisitor(req,res);
+});
+
+app.post('/addUserLog', jsonParser, function (req,res) {
+    if(valFunctions.checkInputDataNULL(req,res)) return false;
+    if(valFunctions.checkInputDataQuality(req,res)) return false;
+    var dbFunctions = require('./models/connector');
+    dbFunctions.updateLogs(req,res);
+});
+
+app.post('/addRank', jsonParser, function (req,res) {
+    if(valFunctions.checkInputDataNULL(req,res)) return false;
+    if(valFunctions.checkInputDataQuality(req,res)) return false;
+    var dbFunctions = require('./models/connector');
+    dbFunctions.addRank(req,res);
 });
 
 
