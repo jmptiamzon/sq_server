@@ -157,10 +157,10 @@ app.get('/backupDB', jsonParser, function (req,res) {
 
     mysqldump({
         connection: {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'dbceval',
+            host: 'us-cdbr-iron-east-05.cleardb.net',
+            user: 'b12b33fbe54ef6',
+            password: 'a084ed40',
+            database: 'heroku_10dd9d0eb8d0572',
         },
         dumpToFile: logpath,
     });
@@ -173,10 +173,10 @@ app.post('/backupTables', jsonParser, function (req,res) {
 
     mysqldump({
         connection: {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'dbceval',
+            host: 'us-cdbr-iron-east-05.cleardb.net',
+            user: 'b12b33fbe54ef6',
+            password: 'a084ed40',
+            database: 'heroku_10dd9d0eb8d0572',
         },
         dump: {
             tables: req.body.tables,
