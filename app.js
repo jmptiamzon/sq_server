@@ -1,8 +1,10 @@
 const express = require('express');
+const fs = require('fs');
 const bodyParser = require('body-parser');
 const app = express();
 const mysqldump = require('mysqldump');
 var nodemailer = require('nodemailer');
+var ejs = require('ejs');
 //const bcrypt = require('bcrypt');
 //const saltRounds = 10;
 // store config variables in dotenv
@@ -12,6 +14,10 @@ const cors = require('cors');
 // ****** allow cross-origin requests code START ****** //
 // http://localhost:4200 { origin: 'https://ceval-1053a.firebaseapp.com' }
 app.use(cors()); // uncomment this to enable all CORS and delete cors(corsOptions) in below code
+//app.use(bodyParser.urlencoded({extended:true}));
+//app.engine('html', require('ejs').renderFile);
+
+
 const allowedOrigins = process.env.allowedOrigins.split(',');
 
 // ****** validation rules START ****** //
@@ -217,18 +223,28 @@ app.get('/sendEmail', jsonParser, function (req, res) {
             pass: '45788670'
         }
     });
-    let mailOptions = {
-        // should be replaced with real recipient's account
-        to: 'sexurfaffy@gmail.com',
-        subject: 'test',
-        text: 'test'
-    };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
+
+    ejs.renderFile(__dirname + '/template/mail.html', { test: 'ok' }, function (err, data) {
+        if (err) {
+            console.log(err);
+        
+        } else {
+            let mailOptions = {
+                // should be replaced with real recipient's account
+                to: 'sexurfaffy@gmail.com',
+                subject: 'test',
+                html: data
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log('Message %s sent: %s', info.messageId, info.response);
+            });
         }
-        console.log('Message %s sent: %s', info.messageId, info.response);
     });
+
+
 });
 
 app.post('/addUser', jsonParser, function (req,res) {
