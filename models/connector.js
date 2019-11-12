@@ -832,6 +832,7 @@ module.exports = {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblusers SET ?';
         var values = { 
+          'visitor_id': req.body.visitor_id,
           'full_name': req.body.fname, 
           'gender': req.body.gender, 
           'age': req.body.age,
@@ -936,6 +937,107 @@ module.exports = {
           var sql = 'SELECT * FROM tblusers';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getChosenSchool: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblcourserank INNER JOIN tblschool ON tblschool.id = tblcourserank.school_id WHERE YEAR(tblcourserank.created_at) = ? GROUP BY user_id';
+          var value = req.params.currYear;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getSuggestedCourse: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblcourserank INNER JOIN tblcourse ON tblcourse.id = tblcourserank.course_id GROUP BY course_id';
+          var value = req.params.currYear;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getConversionCount: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+          var sql = 'SELECT (SELECT COUNT(*) FROM tblvisitors WHERE YEAR(created_at) = ?) as tbl1, (SELECT COUNT(*) FROM tblusers WHERE YEAR(created_at) = ?) as tbl2';
+          // Use the connection
+          connection.query(sql, [req.params.currYear, req.params.currYear], function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+          
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getVisitors: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+          var sql = 'SELECT * FROM tblvisitors WHERE YEAR(created_at) = ?';
+          var value = req.params.currYear;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
             if (error) {
               resultsNotFound["errorMessage"] = "Something went wrong with Server.";
               return res.send(resultsNotFound);

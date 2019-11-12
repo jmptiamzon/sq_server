@@ -212,6 +212,33 @@ app.get('/getAssessmentSchool', jsonParser, function (req, res) {
     dbFunctions.getAssessmentSchool(req,res);
 });
 
+app.post('/sendContactUs', jsonParser, function (req, res){
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            // should be replaced with real sender's account
+            user: 'jmptiamzon@gmail.com',
+            pass: '45788670'
+        }
+    });
+
+    let mailOptions = {
+        // should be replaced with real recipient's account
+        to: req.body.email,
+        subject: req.body.subject,
+        text: req.body.content
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message %s sent: %s', info.messageId, info.response);
+        res.send(true);
+    });
+});
+
 app.get('/sendEmail', jsonParser, function (req, res) {
     let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -240,6 +267,7 @@ app.get('/sendEmail', jsonParser, function (req, res) {
                     return console.log(error);
                 }
                 console.log('Message %s sent: %s', info.messageId, info.response);
+                return true;
             });
         }
     });
@@ -276,6 +304,30 @@ app.get('/getUsers', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.getUsers(req,res);
+});
+
+app.get('/getChosenSchool/:currYear', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getChosenSchool(req,res);
+});
+
+app.get('/getSuggestedCourse/:currYear', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getSuggestedCourse(req,res);
+});
+
+app.get('/getVisitors/:currYear', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getVisitors(req,res);
+});
+
+app.get('/getConversionCount/:currYear', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getConversionCount(req,res);
 });
 
 app.post('/addVisitor', jsonParser, function (req,res) {
