@@ -24,7 +24,7 @@ module.exports = {
       console.log(req);
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
-          var sql = 'SELECT * FROM tbladmin WHERE username = ?';
+          var sql = 'SELECT * FROM tbladmin WHERE username = ? AND status = 1';
           var values = [req.body.uname]
           // Use the connection
           connection.query(sql, values, function (error, results, fields) {
@@ -94,7 +94,29 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblschool SET ?';
-        var values = { 'school_name': req.body.sname, 'min_tuition': req.body.mntuition, 'max_tuition': req.body.mxtuition }
+        var values = { 'school_name': req.body.sname, 'min_tuition': req.body.mntuition, 'max_tuition': req.body.mxtuition };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    schoolExists: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'SELECT * FROM tblschool WHERE school_name = ?';
+        var values = req.body.sname;
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -116,7 +138,29 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblcourse SET ?';
-        var values = { 'school_id': req.body.sid.toString(), 'course_name': req.body.cname }
+        var values = { 'school_id': req.body.sid.toString(), 'course_name': req.body.cname };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    courseExists: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'SELECT * FROM tblcourse WHERE course_name = ?';
+        var values = req.body.cname;
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -139,7 +183,30 @@ module.exports = {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblquestions SET ?';
 
-        var values = { 'question': req.body.question, 'course_id': req.body.course.toString() }
+        var values = { 'question': req.body.question, 'course_id': req.body.course.toString() };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    questionExists: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'SELECT * FROM tblquestions WHERE question = ?';
+
+        var values = req.body.question;
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -161,7 +228,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblltree SET ?';
-        var values = { 'school_id': req.body.schoolId, 'question_id': req.body.questionId }
+        var values = { 'school_id': req.body.schoolId, 'question_id': req.body.questionId };
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -256,7 +323,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblschool';
+          var sql = 'SELECT * FROM tblschool WHERE status = 1';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -280,7 +347,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblcourse';
+          var sql = 'SELECT * FROM tblcourse WHERE status = 1';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -304,7 +371,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblquestions';
+          var sql = 'SELECT * FROM tblquestions WHERE status = 1';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -855,6 +922,36 @@ module.exports = {
       });
     },
 
+    adminExists: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+
+          var sql = 'SELECT * FROM tbladmin WHERE firstname = ? AND middlename = ? AND lastname = ? OR username = ?';
+          
+          var values = [ 
+            req.body.fname, 
+            req.body.mname, 
+            req.body.lname, 
+            req.body.uname
+          ];
+          // Use the connection
+          connection.query(sql, values, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "emailID already exists.";
+              return res.send(resultsNotFound);
+            } else {
+              resultsFound["data"] = results;
+              return res.send(resultsFound);
+            } 
+  
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+           });
+        });
+  
+    },
+
     getUserCount: function(req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
@@ -1103,5 +1200,106 @@ module.exports = {
           if (error) throw error; // Don't use the connection here, it has been returned to the pool.
         });
       });
+    },
+
+    addSurvey: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'INSERT INTO tblsurvey SET ?';
+        var values = {};
+
+        if (req.body.cond == 1) {
+          values = {
+            'user_id': req.body.id,
+            'school_name': req.body.schoolEnroll,
+            'course_name': req.body.courseEnroll,
+          };
+        } else if (req.body.cond == 2) {
+          values = {
+            'user_id': req.body.id,
+            'school_name': req.body.schoolEnroll,
+            'course_name': req.body.otherCourse,
+          };
+        } else if (req.body.cond == 3) {
+          values = {
+            'user_id': req.body.id,
+            'school_name': req.body.otherSchool,
+            'course_name': req.body.courseEnroll,
+          };
+        } else if (req.body.cond == 4) {
+          values = {
+            'user_id': req.body.id,
+            'school_name': req.body.otherSchool,
+            'course_name': req.body.otherCourse,
+          };
+        }
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    getVisitorToken: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT tblusers.id AS user_id FROM tblvisitors INNER JOIN tblusers ON tblvisitors.id = tblusers.visitor_id WHERE user_token = ?';
+          var values = req.body.user_token;
+          // Use the connection
+          connection.query(sql, values, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    
+
+    surveyExists: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+          var sql = 'SELECT * FROM tblsurvey WHERE user_id = ?';
+          var value = req.body.user_id;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
     },
 };

@@ -330,6 +330,30 @@ app.get('/getConversionCount/:currYear', jsonParser, function (req, res) {
     dbFunctions.getConversionCount(req,res);
 });
 
+app.post('/adminExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.adminExists(req,res);
+});
+
+app.post('/schoolExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.schoolExists(req,res);
+});
+
+app.post('/courseExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.courseExists(req,res);
+});
+
+app.post('/questionExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.questionExists(req,res);
+});
+
 app.post('/addVisitor', jsonParser, function (req,res) {
     if(valFunctions.checkInputDataNULL(req,res)) return false;
     if(valFunctions.checkInputDataQuality(req,res)) return false;
@@ -349,6 +373,42 @@ app.post('/addRank', jsonParser, function (req,res) {
     if(valFunctions.checkInputDataQuality(req,res)) return false;
     var dbFunctions = require('./models/connector');
     dbFunctions.addRank(req,res);
+});
+
+app.get('/getMaintenance', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.getAppStatus(req,res);
+});
+
+app.get('/getSurveyCourse', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.getDataCourse(req,res);
+});
+
+app.get('/getSurveySchool', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.getDataSchool(req,res);
+});
+
+app.post('/surveyExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.surveyExists(req,res);
+});
+
+app.post('/getVisitorToken', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.getVisitorToken(req,res);
+});
+
+app.post('/addSurvey', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    // valFunctions.checkJWTToken(req,res);
+    dbFunctions.addSurvey(req,res);
 });
 
 
