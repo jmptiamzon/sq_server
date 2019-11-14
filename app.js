@@ -212,7 +212,7 @@ app.get('/getAssessmentSchool', jsonParser, function (req, res) {
     dbFunctions.getAssessmentSchool(req,res);
 });
 
-app.post('/sendContactUs', jsonParser, function (req, res){
+app.post('/sendSurvey', jsonParser, function (req, res) {
     let transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 465,
@@ -224,42 +224,15 @@ app.post('/sendContactUs', jsonParser, function (req, res){
         }
     });
 
-    let mailOptions = {
-        // should be replaced with real recipient's account
-        to: req.body.email,
-        subject: req.body.subject,
-        text: req.body.content
-    };
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Message %s sent: %s', info.messageId, info.response);
-        res.send(true);
-    });
-});
-
-app.get('/sendEmail', jsonParser, function (req, res) {
-    let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            // should be replaced with real sender's account
-            user: 'jmptiamzon@gmail.com',
-            pass: '45788670'
-        }
-    });
-
-    ejs.renderFile(__dirname + '/template/mail.html', { test: 'ok' }, function (err, data) {
+    ejs.renderFile(__dirname + '/template/mail.html', { visitor: req.body.visitor }, function (err, data) {
         if (err) {
             console.log(err);
         
         } else {
             let mailOptions = {
                 // should be replaced with real recipient's account
-                to: 'sexurfaffy@gmail.com',
-                subject: 'test',
+                to: req.body.email,
+                subject: 'Thank you for taking the assessment',
                 html: data
             };
             transporter.sendMail(mailOptions, (error, info) => {
@@ -267,7 +240,43 @@ app.get('/sendEmail', jsonParser, function (req, res) {
                     return console.log(error);
                 }
                 console.log('Message %s sent: %s', info.messageId, info.response);
-                return true;
+                res.send(true);
+            });
+        }
+    });
+
+
+});
+
+app.post('/sendContact', jsonParser, function (req, res) {
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+            // should be replaced with real sender's account
+            user: 'jmptiamzon@gmail.com',
+            pass: '45788670'
+        }
+    });
+
+    ejs.renderFile(__dirname + '/template/contact.html', { from: req.body.email, body: req.body.content }, function (err, data) {
+        if (err) {
+            console.log(err);
+        
+        } else {
+            let mailOptions = {
+                // should be replaced with real recipient's account
+                to: req.body.email,
+                subject: req.body.subject,
+                html: data
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                console.log('Message %s sent: %s', info.messageId, info.response);
+                res.send(true);
             });
         }
     });
