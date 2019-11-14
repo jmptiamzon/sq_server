@@ -378,8 +378,8 @@ app.post('/addUserLog', jsonParser, function (req,res) {
 });
 
 app.post('/addRank', jsonParser, function (req,res) {
-    if(valFunctions.checkInputDataNULL(req,res)) return false;
-    if(valFunctions.checkInputDataQuality(req,res)) return false;
+    // if(valFunctions.checkInputDataNULL(req,res)) return false;
+    // if(valFunctions.checkInputDataQuality(req,res)) return false;
     var dbFunctions = require('./models/connector');
     dbFunctions.addRank(req,res);
 });

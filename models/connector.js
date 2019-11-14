@@ -2,6 +2,7 @@ const pool = require('./dbconnection');
 const bcrypt = require('bcryptjs');
 // const saltRounds = 10;
 const jwt = require('jsonwebtoken');
+var string = require("string-sanitizer");
 
 var resultsNotFound = {
     "errorCode": "0",
@@ -1082,7 +1083,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         
-          var sql = 'SELECT * FROM tblcourserank INNER JOIN tblcourse ON tblcourse.id = tblcourserank.course_id GROUP BY course_id';
+          var sql = 'SELECT * FROM tblcourserank INNER JOIN tblcourse ON tblcourse.id = tblcourserank.course_id GROUP BY user_id, course_id';
           var value = req.params.currYear;
           // Use the connection
           connection.query(sql, value, function (error, results, fields) {
