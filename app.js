@@ -420,6 +420,19 @@ app.post('/addSurvey', jsonParser, function (req, res) {
     dbFunctions.addSurvey(req,res);
 });
 
+app.get('/getTrees', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getTrees(req,res);
+});
+
+app.post('/deleteLinearTree', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.deleteLinearTree(req,res);
+});
+
+
 
 /*
 var test = "";

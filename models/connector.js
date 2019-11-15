@@ -22,7 +22,6 @@ var resultsFound = {
 
 module.exports = {
     loginUser: function (req, res) {
-      console.log(req);
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
           var sql = 'SELECT * FROM tbladmin WHERE username = ? AND status = 1';
@@ -447,7 +446,7 @@ module.exports = {
     
         } else {
           bcrypt.genSalt(10, function(err, salt) {
-            bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
+            bcrypt.hash(req.body.pword, salt, function(err, hash) {
               var values = { 
                 'firstname': req.body.fname, 
                 'middlename': req.body.mname, 
@@ -498,7 +497,6 @@ module.exports = {
               return res.send(resultsNotFound);
 
             } else {
-              console.log(results);
               return res.send(resultsFound);
             }
             
@@ -509,7 +507,7 @@ module.exports = {
         } else {  
           bcrypt.genSalt(10, function(err, hash) {
 
-            bcrypt.hash(req.body.pword, saltRounds, function(err, hash) {
+            bcrypt.hash(req.body.pword, hash, function(err, hash) {
               var values = { 
                 'firstname': req.body.fname, 
                 'middlename': req.body.mname, 
@@ -525,7 +523,6 @@ module.exports = {
                   return res.send(resultsNotFound);
     
                 } else {
-                  console.log(results);
                   return res.send(resultsFound);
                 }
   
@@ -1176,6 +1173,28 @@ module.exports = {
       });
     },
 
+    deleteLinearTree: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'DELETE FROM tblltree WHERE id = ?';
+        var values = req.body.question_id;
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
     addRank: function (req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
@@ -1277,13 +1296,36 @@ module.exports = {
         });
     },
 
-    
-
     surveyExists: function(req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
           var sql = 'SELECT * FROM tblsurvey WHERE user_id = ?';
           var value = req.body.user_id;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getTrees: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+          var sql = 'SELECT tblltree.id AS tree_id, tblschool.id AS school_id, tblschool.school_name, tblquestions.id AS question_id, tblquestions.question FROM tblltree INNER JOIN tblschool ON tblschool.id = tblltree.school_id INNER JOIN tblquestions ON tblquestions.id = tblltree.question_id';
+          var value = req.params.currYear;
           // Use the connection
           connection.query(sql, value, function (error, results, fields) {
             if (error) {
