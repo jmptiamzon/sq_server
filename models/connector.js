@@ -183,7 +183,10 @@ module.exports = {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblquestions SET ?';
 
-        var values = { 'question': req.body.question, 'course_id': req.body.course.toString() };
+        var values = { 
+          'question': string.sanitize(req.body.question), 
+          'course_id': req.body.course.toString() 
+        };
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -323,7 +326,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblschool WHERE status = 1';
+          var sql = 'SELECT * FROM tblschool';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -347,7 +350,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblcourse WHERE status = 1';
+          var sql = 'SELECT * FROM tblcourse';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -371,7 +374,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblquestions WHERE status = 1';
+          var sql = 'SELECT * FROM tblquestions';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -1325,6 +1328,31 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
           var sql = 'SELECT tblltree.id AS tree_id, tblschool.id AS school_id, tblschool.school_name, tblquestions.id AS question_id, tblquestions.question FROM tblltree INNER JOIN tblschool ON tblschool.id = tblltree.school_id INNER JOIN tblquestions ON tblquestions.id = tblltree.question_id';
+          var value = req.params.currYear;
+          // Use the connection
+          connection.query(sql, value, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getSurvey: function(req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+          var sql = 'SELECT * FROM tblsurvey WHERE YEAR(created_at) = ?';
           var value = req.params.currYear;
           // Use the connection
           connection.query(sql, value, function (error, results, fields) {

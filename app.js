@@ -158,8 +158,7 @@ app.get('/updateAppStatus/:status', jsonParser, function (req,res) {
 
 app.get('/backupDB', jsonParser, function (req,res) {
     valFunctions.checkJWTToken(req,res);
-    var home = require('os').homedir();
-    var logpath = home + '/Documents/dbceval.sql';
+    var logpath = process.env['HOME'] + '/Documents/dbceval.sql';
 
     mysqldump({
         connection: {
@@ -174,8 +173,7 @@ app.get('/backupDB', jsonParser, function (req,res) {
 
 app.post('/backupTables', jsonParser, function (req,res) {
     valFunctions.checkJWTToken(req,res);
-    var home = require('os').homedir();
-    var logpath = home + '/Documents/dbceval.sql';
+    var logpath = process.env['HOME'] + + '/Documents/dbceval.sql';
 
     mysqldump({
         connection: {
@@ -430,6 +428,12 @@ app.post('/deleteLinearTree', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.deleteLinearTree(req,res);
+});
+
+app.get('/getSurvey/:currYear', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getSurvey(req,res);
 });
 
 
