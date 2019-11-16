@@ -874,7 +874,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         
-          var sql = 'SELECT * FROM tblschool';
+          var sql = 'SELECT * FROM tblltree INNER JOIN tblschool ON tblschool.id = tblltree.school_id GROUP BY school_id';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -886,6 +886,33 @@ module.exports = {
               return res.send(resultsNotFound);
             }
 
+            console.log(results);
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
+    getQuestionTree: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        
+          var sql = 'SELECT * FROM tblltree INNER JOIN tblquestions ON tblquestions.id = tblltree.question_id WHERE school_id = ?';
+          // Use the connection
+          connection.query(sql, req.params.id, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+
+            console.log(results);
             resultsFound["data"] = results;
             res.send(resultsFound);
             // When done with the connection, release it.

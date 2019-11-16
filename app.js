@@ -162,10 +162,10 @@ app.get('/backupDB', jsonParser, function (req,res) {
 
     mysqldump({
         connection: {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'dbceval',
+            host: 'us-cdbr-iron-east-05.cleardb.net',
+            user: 'ba7ffaa0e7b139',
+            password: '5d619479',
+            database: 'heroku_0cca52eb0fb504c',
         },
         dumpToFile: logpath,
     });
@@ -177,10 +177,10 @@ app.post('/backupTables', jsonParser, function (req,res) {
 
     mysqldump({
         connection: {
-            host: 'localhost',
-            user: 'root',
-            password: '',
-            database: 'dbceval',
+            host: 'us-cdbr-iron-east-05.cleardb.net',
+            user: 'ba7ffaa0e7b139',
+            password: '5d619479',
+            database: 'heroku_0cca52eb0fb504c',
         },
         dump: {
             tables: req.body.tables,
@@ -435,6 +435,14 @@ app.get('/getSurvey/:currYear', jsonParser, function (req, res) {
     valFunctions.checkJWTToken(req,res);
     dbFunctions.getSurvey(req,res);
 });
+
+app.get('/getQuestionTree/:id', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getQuestionTree(req,res);
+});
+
+
 
 
 
