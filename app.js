@@ -79,6 +79,17 @@ app.get('/getData', jsonParser, function (req, res) {
     dbFunctions.getData(req,res);
 });
 
+app.get('/getDataArea', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.getDataArea(req,res);
+});
+
+app.get('/getArea', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    dbFunctions.getDataArea(req,res);
+});
+
 app.get('/getDataSchool', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
@@ -163,9 +174,9 @@ app.get('/backupDB', jsonParser, function (req,res) {
     mysqldump({
         connection: {
             host: 'us-cdbr-iron-east-05.cleardb.net',
-            user: 'ba7ffaa0e7b139',
-            password: '5d619479',
-            database: 'heroku_0cca52eb0fb504c',
+            user: 'b77b8945ed1b4c',
+            password: '992080b7',
+            database: 'heroku_d35f42bafe87ee6',
         },
         dumpToFile: logpath,
     });
@@ -178,9 +189,9 @@ app.post('/backupTables', jsonParser, function (req,res) {
     mysqldump({
         connection: {
             host: 'us-cdbr-iron-east-05.cleardb.net',
-            user: 'ba7ffaa0e7b139',
-            password: '5d619479',
-            database: 'heroku_0cca52eb0fb504c',
+            user: 'b77b8945ed1b4c',
+            password: '992080b7',
+            database: 'heroku_d35f42bafe87ee6',
         },
         dump: {
             tables: req.body.tables,
@@ -207,7 +218,7 @@ app.get('/getAssessmentCourse', jsonParser, function (req, res) {
 
 app.get('/getAssessmentSchool', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
-    dbFunctions.getAssessmentSchool(req,res);
+    dbFunctions.getDataSchool(req,res);
 });
 
 app.post('/sendSurvey', jsonParser, function (req, res) {
@@ -341,6 +352,24 @@ app.post('/adminExists', jsonParser, function (req, res) {
     var dbFunctions = require('./models/connector');
     valFunctions.checkJWTToken(req,res);
     dbFunctions.adminExists(req,res);
+});
+
+app.post('/addArea', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.addArea(req,res);
+});
+
+app.post('/updateArea', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.updateArea(req,res);
+});
+
+app.post('/areaExists', jsonParser, function (req, res) {
+    var dbFunctions = require('./models/connector');
+    valFunctions.checkJWTToken(req,res);
+    dbFunctions.areaExists(req,res);
 });
 
 app.post('/schoolExists', jsonParser, function (req, res) {

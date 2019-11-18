@@ -94,7 +94,12 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         var sql = 'INSERT INTO tblschool SET ?';
-        var values = { 'school_name': req.body.sname, 'min_tuition': req.body.mntuition, 'max_tuition': req.body.mxtuition };
+        var values = { 
+          'school_name': req.body.sname, 
+          'area_id': req.body.areaSelect,
+          'min_tuition': req.body.mntuition, 
+          'max_tuition': req.body.mxtuition 
+        };
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
           if (error) {
@@ -322,11 +327,35 @@ module.exports = {
         });
     },
 
+    getDataArea: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+  
+          var sql = 'SELECT * FROM tblarea';
+          // Use the connection
+          connection.query(sql, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "Something went wrong with Server.";
+              return res.send(resultsNotFound);
+            }
+            if (results =="") {
+              resultsNotFound["errorMessage"] = "User Id not found.";
+              return res.send(resultsNotFound);
+            }
+            resultsFound["data"] = results;
+            res.send(resultsFound);
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+          });
+        });
+    },
+
     getDataSchool: function (req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
   
-          var sql = 'SELECT * FROM tblschool';
+          var sql = 'SELECT tblschool.id AS school_id, tblschool.area_id, tblarea.area, tblschool.school_name, tblschool.min_tuition, tblschool.max_tuition, tblschool.status FROM tblschool INNER JOIN tblarea ON tblschool.area_id = tblarea.id';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -547,6 +576,7 @@ module.exports = {
 
         var values = { 
           'school_name': req.body.sname, 
+          'area_id': req.body.areaSelect,
           'min_tuition': req.body.mntuition, 
           'max_tuition': req.body.mxtuition, 
           'status': req.body.status,
@@ -568,16 +598,14 @@ module.exports = {
       });
     },
 
-    updateCourse: function (req, res) {
+    updateArea: function (req, res) {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
-        var sql = 'UPDATE tblcourse SET ? WHERE id = ?';
-
-        var values = { 
-          'school_id': req.body.sid.toString(), 
-          'course_name': req.body.cname, 
-          'status': req.body.status,
-        }
+        var sql = 'UPDATE tblarea SET ? WHERE id = ?';
+        var values = {
+          'area': req.body.area, 
+          'status': req.body.status === true ? 1 : 0
+        };
 
         connection.query(sql, [values, req.body.id], function(error, results, fields){
           if (error) { 
@@ -797,7 +825,21 @@ module.exports = {
               'user_type': 1
             };
 
-          }
+          } else if (req.params.cond == 21) {
+            values = { 
+              'user': req.params.userid, 
+              'msg_log': req.params.username + ' added a new area.',
+              'user_type': 0 
+            };
+
+          } else if (req.params.cond == 22) {
+            values = { 
+              'user': req.params.userid, 
+              'msg_log': req.params.username + ' updated an area with id ' + req.params.id + '.',
+              'user_type': 0 
+            };
+
+          } 
 
 
 
@@ -874,7 +916,7 @@ module.exports = {
       pool.getConnection(function (err, connection) {
         if (err) throw err; // not connected!
         
-          var sql = 'SELECT * FROM tblltree INNER JOIN tblschool ON tblschool.id = tblltree.school_id GROUP BY school_id';
+          var sql = 'SELECT * FROM tblltree INNER JOIN tblschool ON tblschool.id = tblltree.school_id INNER JOIN tblarea ON tblschool.area_id = tblarea.id GROUP BY school_id';
           // Use the connection
           connection.query(sql, function (error, results, fields) {
             if (error) {
@@ -886,7 +928,7 @@ module.exports = {
               return res.send(resultsNotFound);
             }
 
-            console.log(results);
+            // console.log(results);
             resultsFound["data"] = results;
             res.send(resultsFound);
             // When done with the connection, release it.
@@ -932,6 +974,9 @@ module.exports = {
           'gender': req.body.gender, 
           'age': req.body.age,
           'email': req.body.email, 
+          'annual_income': req.body.income,
+          'area_id': req.body.areaSelect,
+          'first_course': req.body.courseChoice
         };
         // Use the connection
         connection.query(sql, values, function (error, results, fields) {
@@ -948,6 +993,81 @@ module.exports = {
           if (error) throw error; // Don't use the connection here, it has been returned to the pool.
         });
       });
+    },
+
+    addArea: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'INSERT INTO tblarea SET ?';
+        var values = { 
+          'area': req.body.area
+        };
+        // Use the connection
+        connection.query(sql, values, function (error, results, fields) {
+          if (error) {
+            resultsNotFound["errorMessage"] = "emailID already exists.";
+            return res.send(resultsNotFound);
+          } else {
+            resultsFound["data"] = results;
+            return res.send(resultsFound);
+          } 
+  
+          // When done with the connection, release it.
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    updateCourse: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+        var sql = 'UPDATE tblcourse SET ? WHERE id = ?';
+
+        var values = { 
+          'area': req.body.area, 
+          'status': req.body.status,
+        }
+
+        connection.query(sql, [values, req.body.id], function(error, results, fields){
+          if (error) { 
+            console.log(error);
+            resultsNotFound["errorMessage"] = "Data is NOT updated.";
+            return res.send(resultsNotFound);
+
+          } else {
+            return res.send(resultsFound);
+          }
+            
+          connection.release(); // Handle error after the release.
+          if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+        });
+      });
+    },
+
+    areaExists: function (req, res) {
+      pool.getConnection(function (err, connection) {
+        if (err) throw err; // not connected!
+
+          var sql = 'SELECT * FROM tblarea WHERE area = ?';
+          
+          var values = req.body.area;
+          // Use the connection
+          connection.query(sql, values, function (error, results, fields) {
+            if (error) {
+              resultsNotFound["errorMessage"] = "emailID already exists.";
+              return res.send(resultsNotFound);
+            } else {
+              resultsFound["data"] = results;
+              return res.send(resultsFound);
+            } 
+  
+            // When done with the connection, release it.
+            connection.release(); // Handle error after the release.
+            if (error) throw error; // Don't use the connection here, it has been returned to the pool.
+           });
+        });
+  
     },
 
     adminExists: function (req, res) {
