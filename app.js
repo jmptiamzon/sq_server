@@ -228,8 +228,8 @@ app.post('/sendSurvey', jsonParser, function (req, res) {
         secure: true,
         auth: {
             // should be replaced with real sender's account
-            user: 'jmptiamzon@gmail.com',
-            pass: '45788670'
+            user: '',
+            pass: ''
         }
     });
 
@@ -264,8 +264,8 @@ app.post('/sendContact', jsonParser, function (req, res) {
         secure: true,
         auth: {
             // should be replaced with real sender's account
-            user: 'jmptiamzon@gmail.com',
-            pass: '45788670'
+            user: '',
+            pass: ''
         }
     });
 
